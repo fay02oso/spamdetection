@@ -7,9 +7,6 @@ import static java.lang.System.*;
 
 public class spam {
 
-	/**
-	 * @param args
-	 */
 	public static String dataset="correus.txt";
 	public static int training=70;
 	public static int test=100-training;
