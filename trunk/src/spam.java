@@ -8,7 +8,7 @@ import static java.lang.System.*;
 public class spam {
 
 	public static String dataset="correus.txt";
-	public static int training=70;
+	public static int training=50;
 	public static int test=100-training;
 	
 	public static treemap spam = new treemap();
@@ -16,8 +16,6 @@ public class spam {
 	public static int nNoSpam=0;
 	public static int nSpam=0;
 	public static int nMails=0;
-	public static int nTraining=0;
-	public static int nTest=0;
 	private static Scanner file;
 	public static int[][] confusionMatrix = new int [2][2];
 
@@ -104,7 +102,6 @@ public class spam {
 	        	String line = file.nextLine();
 	        	String[] email = line.split (" ");
 	        	if (email.length > 0) {	
-	        		nTraining++;
 	        		if(Integer.parseInt(email[0]) == 1){
 						//NO ES SPAM
 	        			nNoSpam++;
