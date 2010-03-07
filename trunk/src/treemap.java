@@ -1,4 +1,4 @@
-import static java.lang.System.*;
+
 
 class treemap {
 
