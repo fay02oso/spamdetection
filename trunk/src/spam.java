@@ -13,13 +13,14 @@ public class spam {
 	
 	public static treemap spam = new treemap();
 	public static treemap noSpam = new treemap();
+	public static int mailArray[][];
 	public static int nNoSpam=0;
 	public static int nSpam=0;
 	public static int nMails=0;
 	private static Scanner file;
 	public static int[][] confusionMatrix = new int [2][2];
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
 		readFile(dataset);
 		noSpam.setPrior((double)nNoSpam/(double)nMails);
 		spam.setPrior((double)nSpam/(double)nMails);
@@ -30,6 +31,9 @@ public class spam {
 		test();
 		file.close();
 		printMatrix();
+		//out.println(spam.findMaxIndex(spam.root));
+		//out.println(noSpam.findMaxIndex(noSpam.root));
+		//int[][] mailArray = mailsToArray(Math.max(spam.findMaxIndex(spam.root),noSpam.findMaxIndex(noSpam.root)),(int) (nMails*((float)training/100)),dataset);
 	}
 	
 	private static void test() {
@@ -126,6 +130,40 @@ public class spam {
 		}catch (IOException error) {
 	         //Misstage error de fitxer no trobat.
 		}
+	}
+	
+	public static int[][] mailsToArray(int maxIndex, int numberMails, String filename){
+		int[][] mails = new int [(int)numberMails][maxIndex+1];
+		try {
+			file = new Scanner (new File (filename));
+
+	        for (int linenr = 0; linenr<=nMails*((float)training/100); ++linenr) {
+	        	String line = file.nextLine();
+	        	String[] email = line.split (" ");
+	        	if (email.length > 0) {	
+	        		if(Integer.parseInt(email[0]) == 1){
+						//NO ES SPAM
+	        			mails[linenr][0]=1;
+	        			for(int i=1; i<email.length; i++){
+	        				String[] words  = email[i].split ("\\:");
+	        				mails[linenr][Integer.parseInt(words[0])]=Integer.parseInt(words[1]);
+	        			}
+	        		}
+	        		if(Integer.parseInt(email[0]) == -1){
+	        			//ES SPAM
+	        			mails[linenr][0]=-1;
+	        			for(int i=1; i<email.length; i++){
+	        				String[] words  = email[i].split ("\\:");
+	        				mails[linenr][Integer.parseInt(words[0])]=Integer.parseInt(words[1]);
+	        			}
+	        		}
+	        	} 
+	        }
+	        
+		}catch (IOException error) {
+	         //Misstage error de fitxer no trobat.
+		}
+		return mails;
 	}
 
 }

@@ -11,19 +11,20 @@ class treemap {
       double probability;
       tree left;
       tree right;
+      tree parent;
    }
    tree root = null;
 
    public double get (int key) {
-          return found(root, key);  
+          return find(root, key);  
    }
    
-   private double found(tree node, int key) {
+   private double find(tree node, int key) {
           if(node==null) return 0;
           if(key<node.key) 
-                  return found(node.left,key);
+                  return find(node.left,key);
           else if (key>node.key) 
-                  return found(node.right,key);
+                  return find(node.right,key);
           else{
         	  return node.probability;
           }
@@ -60,71 +61,7 @@ class treemap {
        }
 
    }
-
-
-	public void inorder(tree node){
-           if(node==null) return;
-           inorder(node.left);
-           out.println(node.key);
-           inorder(node.right);
-   }
-   public void postorder(tree node){
-           if(node==null) return;
-           postorder(node.left);
-           postorder(node.right);
-           out.println(node.key);
-   }
-   public void preorder(tree node){
-           if(node==null) return;
-           out.println(node.key);
-           preorder(node.left);
-           preorder(node.right);
-   }
    
-
-   public void debug_tree () {
-      debug_tree_recur (root, 0);
-   }
-   
-
-	private void debug_tree_recur (tree node, int depth) {
-           if(node==null) return;
-           debug_tree_recur(node.left, depth+1);
-           String left="NULL";
-           String right="NULL";
-           if(node.left!=null) left=node.left.toString();
-           if(node.right!=null) right=node.right.toString();
-           out.printf("%3d \"%s\" \"%s\" %s %s%n",
-               depth, node.key, node.value, left, right);
-           debug_tree_recur(node.right, depth+1);
-   }
-   
-   @SuppressWarnings("unused")
-   private void debug_tree_recur_pre (tree node, int depth) {
-           if(node==null) return;
-           String left="NULL";
-           String right="NULL";
-           if(node.left!=null) left=node.left.toString();
-           if(node.right!=null) right=node.right.toString();
-           out.printf("%3d \"%s\" \"%s\" %s %s%n",
-                depth, node.key, node.value, left, right);
-           debug_tree_recur_pre(node.left, depth+1);
-           debug_tree_recur_pre(node.right, depth+1);
-   }
-   
-   @SuppressWarnings("unused")
-   private void debug_tree_recur_post (tree node, int depth) {
-           if(node==null) return;
-           debug_tree_recur_post(node.left, depth+1);
-           debug_tree_recur_post(node.right, depth+1);
-           String left="NULL";
-           String right="NULL";
-           if(node.left!=null) left=node.left.toString();
-           if(node.right!=null) right=node.right.toString();
-           out.printf("%3d \"%s\" \"%s\" %s %s%n",
-               depth, node.key, node.value, left, right);
-   }
-
    public void addProbability(tree node) {
 	   if(node==null) return;
 	   addProbability(node.left);
@@ -135,5 +72,23 @@ class treemap {
    public void setPrior(double prior) {
 	   this.prior=prior;
    }
+   
+   public int findMaxIndex(tree node){
+	   tree curr=new tree();
+	   int max=0;
+	   for(curr=node;curr!=null;curr=curr.right){
+		   if(max<curr.key) max=curr.key;
+		   
+	   }
+	   return max;
+	   
+   }
+   
+   public void findMaxFrequency(){
+	   
+   
+   }
+   
+   
 
 }
