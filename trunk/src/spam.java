@@ -20,7 +20,8 @@ public class spam {
 	private static Scanner file;
 	public static int[][] confusionMatrix = new int [2][2];
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) {	
+		int[][] mailArray= new int[600][30000];
 		readFile(dataset);
 		noSpam.setPrior((double)nNoSpam/(double)nMails);
 		spam.setPrior((double)nSpam/(double)nMails);
@@ -31,8 +32,8 @@ public class spam {
 		test();
 		file.close();
 		printMatrix();
-		//out.println(spam.findMaxIndex(spam.root));
-		//out.println(noSpam.findMaxIndex(noSpam.root));
+		out.println(spam.findMaxIndex(spam.root));
+		out.println(noSpam.findMaxIndex(noSpam.root));
 		//int[][] mailArray = mailsToArray(Math.max(spam.findMaxIndex(spam.root),noSpam.findMaxIndex(noSpam.root)),(int) (nMails*((float)training/100)),dataset);
 	}
 	
@@ -84,8 +85,10 @@ public class spam {
 	}
 	
 	private static void printMatrix() {
-		out.println("No Spams Classified CORRECT as No Spam: "+confusionMatrix[0][0]);
-		out.println("No Spams Classified WRONG as Spam: "+confusionMatrix[0][1]);
+		out.println("Number of examples for training: "+(int) nMails*training/100+" - "+training+"%");
+		out.println("Number of examples for testing: "+(int) nMails*test/100+" - "+test+"%");
+		out.println("NonSpam Classified CORRECT: "+confusionMatrix[0][0]);
+		out.println("NonSpam Classified WRONG as Spam: "+confusionMatrix[0][1]);
 		out.println("Spams Classified CORRECT as Spam: "+confusionMatrix[1][1]);
 		out.println("Spams Classified WRONG as No Spam: "+confusionMatrix[1][0]);
 		out.println("TOTAL Classified CORRECT: "+(confusionMatrix[0][0]+confusionMatrix[1][1]));
