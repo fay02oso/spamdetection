@@ -1,17 +1,16 @@
 
 
-class treemap {
+public class treemap {
 
    int totalWords=0;
    double prior;
 	
-   class tree {
+   public class tree {
       int key;
       int value;
       double probability;
       tree left;
       tree right;
-      tree parent;
    }
    tree root = null;
 
@@ -29,6 +28,21 @@ class treemap {
         	  return node.probability;
           }
    }
+   
+   public int getValue (int key) {
+       return findValue(root, key);  
+   }
+
+   private int findValue(tree node, int key) {
+       if(node==null) return 0;
+       if(key<node.key) 
+               return findValue(node.left,key);
+       else if (key>node.key) 
+               return findValue(node.right,key);
+       else{
+     	  return node.value;
+       }
+}
 
    public void put (int key, int value) {
           tree newNode=new tree();
@@ -36,7 +50,7 @@ class treemap {
           newNode.value=value;
           newNode.right=null;
           newNode.left=null;
-          if(this.root==null){
+          if(root==null){
                   this.root=newNode;
                   return;
           }
@@ -84,11 +98,32 @@ class treemap {
 	   
    }
    
-   public void findMaxFrequency(){
+   public int findMaxFrequency(tree node,int max, int[] top){
+	   if(node!=null){
 	   
-   
+	       if(node.value>max && !checkMax(max, top)){
+	    	   max=node.key;
+	    	   node.value=node.value*-1;
+	       }
+	       max=findMaxFrequency(node.left, max, top);
+		   max=findMaxFrequency(node.right,max, top);
+	   }
+	   return max;
+   }
+
+   private boolean checkMax(int max, int[] top) {
+	   boolean found=false;
+	   for(int i=0; i<top.length; i++){
+		   if(top[i]==max && top[i]!=0) found=true;
+	   }
+	   return found;
    }
    
-   
+   public void printTree(tree node) {
+	   if(node==null) return;
+	   printTree(node.left);
+       System.out.println("Key: "+node.key+" -> Value: "+ node.value);
+       printTree(node.right);	
+   }
 
 }
