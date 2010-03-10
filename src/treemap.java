@@ -22,11 +22,12 @@ public class treemap {
           if(node==null) return 0;
           if(key<node.key) 
                   return find(node.left,key);
-          else if (key>node.key) 
+          if (key>node.key) 
                   return find(node.right,key);
-          else{
+          if (key==node.key){
         	  return node.probability;
           }
+          return 0;
    }
    
    public int getValue (int key) {
@@ -57,7 +58,7 @@ public class treemap {
           insert(this.root,newNode); 
    }
    
-   public void insert(tree node, tree newNode){
+   private void insert(tree node, tree newNode){
        if (newNode.key<node.key) {
     	   if (node.left != null) {
     		   insert(node.left,newNode);
@@ -119,11 +120,16 @@ public class treemap {
 	   return found;
    }
    
-   public void printTree(tree node) {
-	   if(node==null) return;
-	   printTree(node.left);
-       System.out.println("Key: "+node.key+" -> Value: "+ node.value);
-       printTree(node.right);	
+   
+   public void printTree() {
+	   printTreeRecursive(this.root);	
    }
+   private void printTreeRecursive(tree node){
+	   if(node==null) return;
+	   printTreeRecursive(node.left);
+       System.out.println("Key: "+node.key+" -> Value: "+ node.value);
+       printTreeRecursive(node.right);
+   }
+   
 
 }
