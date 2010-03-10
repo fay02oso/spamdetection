@@ -10,14 +10,14 @@ import static java.lang.System.*;
 
 public class spam {
 	// Parameters
-	public static boolean CORPORA=false; 		//Change the dataset between the corpora and the UAB
+	public static boolean CORPORA=true; 		//Change the dataset between the corpora and the UAB
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
 	/***************************/
 	
-	public static String dataset="correus.txt";
-	public static String datadir="pu_corpora_public/pu1/";
-	
-	public static int training=70;				//Just for the UAB dataset
+	public static String dataset="correus3.txt";
+	//public static String datadir="pu_corpora_public/pu1/";
+	public static String datadir="pu1_encoded/bare/";
+	public static int training=75;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	public static int nTraining=0;
 	public static int nTest=0;
@@ -48,13 +48,13 @@ public class spam {
 			noSpam.setPrior((double)nNoSpam/(double)nMails);
 			spam.setPrior((double)nSpam/(double)nMails);
 		}
-
+ 
 		noSpam.addProbability(noSpam.root);
 		spam.addProbability(spam.root);
 		
 		if(CORPORA) test2();
 		else test();
-	    
+	
 		file.close();
 		printMatrix();
 		//messages[0].printTree();
@@ -65,6 +65,16 @@ public class spam {
 		 
 	}
 	
+	private static void findTopFrequencies() {
+		// TODO Auto-generated method stub
+		int[] top=new int [best];
+
+		for(int i=0;i<best;i++){
+			top[i]=general.findMaxFrequency(general.root, 0, top);
+			out.printf("Identificador:%5d -> Repeticiones:%5d\n",top[i],general.getValue(top[i])*-1);
+		}
+	}
+
 	private static void test() {
 		 for (int linenr = 1; file.hasNextLine(); ++linenr){
 			 double spamProb=0;
@@ -196,41 +206,45 @@ public class spam {
 				continue;
 			}
 			nMails = lineCounter.getLineNumber();
-			//labels=new short[nMails];
-			//messages=new treemap[nMails];
+			labels=new short[nMails];
+			messages=new treemap[nMails];
 			file = new Scanner (new File (filename));
 
 	        for (int linenr = 0; linenr<=nMails*((float)training/100); ++linenr) {
 	        	String line = file.nextLine();
 	        	String[] email = line.split (" ");
-	        	//treemap treeMessage=new treemap();
+	        	treemap treeMessage=new treemap();
 	        	if (email.length > 0) {	
 	        		if(Integer.parseInt(email[0]) == 1){
 						//NO ES SPAM
-	        			//labels[linenr]=1;
+	        			labels[linenr]=1;
 	        			nNoSpam++;
 	        			for(int i=1; i<email.length; i++){
 	        				String[] words  = email[i].split ("\\:");
 	        				noSpam.totalWords=noSpam.totalWords + Integer.parseInt(words[1]);
 	        				noSpam.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
-	        				//treeMessage.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+	        				general.totalWords=general.totalWords + Integer.parseInt(words[1]);
+	        				general.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+	        			    treeMessage.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+	        				
 	        			}
 	        		}
 	        		if(Integer.parseInt(email[0]) == -1){
 	        			//ES SPAM
-	        			//labels[linenr]=-1;
+	        			labels[linenr]=-1;
 	        			nSpam++;
 	        			for(int i=1; i<email.length; i++){
 	        				String[] words  = email[i].split ("\\:");
 	        				spam.totalWords=spam.totalWords + Integer.parseInt(words[1]);
 	        				spam.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
-	        				//treeMessage.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
-
+	        				general.totalWords=general.totalWords + Integer.parseInt(words[1]);
+	        				general.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+	        				treeMessage.put(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+	        	
 	        			}
 	        		}
-	        		
 	        	} 
-	        	//messages[linenr]=treeMessage;
+	        	messages[linenr]=treeMessage;
 	        }
 	        
 		}catch (IOException error) {
@@ -295,6 +309,4 @@ public class spam {
         }
 		
 	}
-	
-	
 }
