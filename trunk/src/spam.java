@@ -10,10 +10,10 @@ import static java.lang.System.*;
 
 public class spam {
 	// Parameters
-	public static boolean CORPORA=false; 			//Change the dataset between the corpora and the UAB
+	public static boolean CORPORA=true; 			//Change the dataset between the corpora and the UAB
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
-	public static boolean NAIVE_BAYES=false;			//Naive Bayes Algorithm
-	public static boolean KNN=true;				//K-Nearest Neighbor Algorithm
+	public static boolean NAIVE_BAYES=false;		//Naive Bayes Algorithm
+	public static boolean KNN=true;					//K-Nearest Neighbor Algorithm
 	/***************************/
 	
 	public static String dataset="correus2.txt";
