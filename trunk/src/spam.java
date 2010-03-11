@@ -183,8 +183,40 @@ public class spam {
 	}
 	
 	private static void testKNN() {
-		// TODO Auto-generated method stub
-		
+		File directory = new File(datadir+"part10/");
+		FilenameFilter filter = new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
+		        return !name.startsWith(".") && !name.contains("unused") && !name.contains("part10");
+		    }
+		};
+		File filename[] = directory.listFiles(filter);
+		for (int i = 0; i < filename.length; i++) {
+			if(filename[i].isFile()){
+				
+				try {
+					file = new Scanner (filename[i]);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				treemap newMessage=new treemap();
+				while(file.hasNext()) {
+		        	String line = file.nextLine();
+		        	int startIndex=0;
+		        	if(line.isEmpty()) continue;
+		        	if(line.startsWith("Subject:")) startIndex=1;
+		        	String[] email = line.split (" ");
+		        	if (email.length > 0) {	
+		        		for(int j=startIndex; j<email.length; j++){
+		        			newMessage.put(Integer.parseInt(email[j]), 1);  			    
+		        		}
+		        			
+		        	}
+		        		
+		        }
+				newMessage.euclidianDistance(messages[0]);
+			}
+		}
 	}
 
 	private static void setMatrix(int row, int col) {
