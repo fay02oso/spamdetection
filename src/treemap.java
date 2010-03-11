@@ -132,18 +132,16 @@ public class treemap {
    }
    
    public double euclidianDistance(treemap trainingMessage){
-	   return euclidianDistanceRec(this.root,trainingMessage,0);
+	   return euclidianDistanceRec(this.root,trainingMessage);
 	   
    }
 
-   private double euclidianDistanceRec(tree node, treemap training, double sum) {
-	// TODO Auto-generated method stub
-	   if(node==null) return -1;
-	   euclidianDistanceRec(node.left,training,sum);
-	   sum=sum+Math.sqrt(Math.pow((node.value-training.getValue(node.key)),2));
-       System.out.println(sum);
-       euclidianDistanceRec(node.right,training,sum);
-       return sum;
+   private double euclidianDistanceRec(tree node, treemap training) {
+	   if(node==null) return 0;
+	   double distance=Math.sqrt(Math.pow(node.value,2)-Math.pow(training.getValue(node.key),2));
+	   return (double)euclidianDistanceRec(node.left,training)+
+	          (double)euclidianDistanceRec(node.right,training)+
+	   		  distance;
    }
    
    

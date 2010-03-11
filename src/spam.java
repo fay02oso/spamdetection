@@ -16,13 +16,16 @@ public class spam {
 	public static boolean KNN=true;					//K-Nearest Neighbor Algorithm
 	/***************************/
 	
-	public static String dataset="correus2.txt";
+	public static String dataset="correus3.txt";
 	//public static String datadir="pu_corpora_public/pu1/";
 	public static String datadir="pu1_encoded/bare/";
 	public static int nTrainingCorpora=500;		// Number of examples for training in the Corpora Dataset
 	
 	public static int training=50;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
+	
+	public static int nNeighbors=2;				//Number of neighbors to predict
+	
 	public static int nTraining=0;
 	public static int nTest=0;
 	public static float correctRatio=0;
@@ -183,6 +186,8 @@ public class spam {
 	}
 	
 	private static void testKNN() {
+		double[] distances=new double[nMails];
+		int[] minimums=new int[nNeighbors];
 		File directory = new File(datadir+"part10/");
 		FilenameFilter filter = new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
@@ -214,9 +219,41 @@ public class spam {
 		        	}
 		        		
 		        }
-				out.println(newMessage.euclidianDistance(messages[0]));
+				for(int j=0; j<nMails; j++){
+					distances[j]=newMessage.euclidianDistance(messages[j]);
+				}
+				int finalClass=0;
+				for(int j=0; j<nNeighbors;j++){
+					finalClass=finalClass+labels[minValue(distances)];
+				}
+				int clase;
+				if(finalClass>0) clase=1;
+				else clase=-1;
+				
+				int label;
+				if(filename[i].getName().contains("spmsg")){
+					label=-1;
+				}
+				else{
+					label=1;
+				}
+				setMatrix(label,clase);
 			}
 		}
+	}
+
+	private static int minValue(double[] distances) {
+		double min = distances[0];
+		int index=0;
+		for (int i=0; i<distances.length; i++) {
+			if (distances[i]<min && distances[i]>0) {
+				min = distances[i];
+				index=i;
+			}
+		}
+		distances[index]=distances[index]*-1;
+		
+		return index;
 	}
 
 	private static void setMatrix(int row, int col) {
