@@ -131,5 +131,21 @@ public class treemap {
        printTreeRecursive(node.right);
    }
    
+   public double euclidianDistance(treemap trainingMessage){
+	   return euclidianDistanceRec(this,trainingMessage.root,0);
+	   
+   }
+
+   private double euclidianDistanceRec(treemap newInstance, tree node, double sum) {
+	// TODO Auto-generated method stub
+	   if(node==null) return -1;
+	   euclidianDistanceRec(newInstance,node.left,sum);
+	   sum+=Math.sqrt(Math.pow((node.value-newInstance.getValue(node.key)),2));
+       System.out.println("Key: "+node.key+" -> Value: "+ node.value);
+       euclidianDistanceRec(newInstance,node.right,sum);
+       return sum;
+   }
+   
+   
 
 }
