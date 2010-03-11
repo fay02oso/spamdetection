@@ -10,18 +10,18 @@ import static java.lang.System.*;
 
 public class spam {
 	// Parameters
-	public static boolean CORPORA=true; 			//Change the dataset between the corpora and the UAB
+	public static boolean CORPORA=false; 			//Change the dataset between the corpora and the UAB
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
-	public static boolean NAIVE_BAYES=true;			//Naive Bayes Algorithm
-	public static boolean KNN=false;				//K-Nearest Neighbor Algorithm
+	public static boolean NAIVE_BAYES=false;			//Naive Bayes Algorithm
+	public static boolean KNN=true;				//K-Nearest Neighbor Algorithm
 	/***************************/
 	
-	public static String dataset="correus3.txt";
+	public static String dataset="correus2.txt";
 	//public static String datadir="pu_corpora_public/pu1/";
 	public static String datadir="pu1_encoded/bare/";
 	public static int nTrainingCorpora=500;		// Number of examples for training in the Corpora Dataset
 	
-	public static int training=75;				//Just for the UAB dataset
+	public static int training=50;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	public static int nTraining=0;
 	public static int nTest=0;
@@ -63,7 +63,7 @@ public class spam {
 		else if(KNN) testKNN();
 		file.close();
 		printMatrix();
-		out.println(messages[1].getValue(82));
+		out.println(messages[1].getValue(1));
 		//findTopFrequencies();
 		//out.println(spam.findMaxIndex(spam.root));
 		//out.println(noSpam.findMaxIndex(noSpam.root));
@@ -214,7 +214,7 @@ public class spam {
 		        	}
 		        		
 		        }
-				newMessage.euclidianDistance(messages[0]);
+				out.println(newMessage.euclidianDistance(messages[0]));
 			}
 		}
 	}
