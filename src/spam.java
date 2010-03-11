@@ -10,13 +10,17 @@ import static java.lang.System.*;
 
 public class spam {
 	// Parameters
-	public static boolean CORPORA=true; 		//Change the dataset between the corpora and the UAB
+	public static boolean CORPORA=true; 			//Change the dataset between the corpora and the UAB
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
+	public static boolean NAIVE_BAYES=true;			//Naive Bayes Algorithm
+	public static boolean KNN=false;				//K-Nearest Neighbor Algorithm
 	/***************************/
 	
 	public static String dataset="correus3.txt";
 	//public static String datadir="pu_corpora_public/pu1/";
 	public static String datadir="pu1_encoded/bare/";
+	public static int nTrainingCorpora=500;		// Number of examples for training in the Corpora Dataset
+	
 	public static int training=75;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	public static int nTraining=0;
@@ -34,30 +38,32 @@ public class spam {
 	private static Scanner file;
 	public static int[][] confusionMatrix = new int [2][2];
 	public static int best=3;
-	public static treemap[] messages;
-	public static short[] labels;
+	public static treemap[] messages= new treemap[2000];
+	public static short[] labels = new short[2000];
 
 	public static void main(String[] args) throws IOException {
 		if(CORPORA) readDir(datadir);
 		else readFile(dataset);
 		
-		if(DEFAULT_PRIORS){
+		if(DEFAULT_PRIORS && NAIVE_BAYES){
 			noSpam.setPrior(0.2);
 			spam.setPrior(0.8);
-		}else{
+		}else if(NAIVE_BAYES){
 			noSpam.setPrior((double)nNoSpam/(double)nMails);
 			spam.setPrior((double)nSpam/(double)nMails);
 		}
- 
-		noSpam.addProbability(noSpam.root);
-		spam.addProbability(spam.root);
 		
-		if(CORPORA) test2();
-		else test();
-	
+		if(NAIVE_BAYES){
+			noSpam.addProbability(noSpam.root);
+			spam.addProbability(spam.root);
+		}
+		
+		if(CORPORA && NAIVE_BAYES) testNaiveCorpora();
+		else if(NAIVE_BAYES) testNaiveUAB();
+		else if(KNN) testKNN();
 		file.close();
 		printMatrix();
-		//messages[0].printTree();
+		out.println(messages[1].getValue(82));
 		//findTopFrequencies();
 		//out.println(spam.findMaxIndex(spam.root));
 		//out.println(noSpam.findMaxIndex(noSpam.root));
@@ -75,7 +81,7 @@ public class spam {
 		}
 	}
 
-	private static void test() {
+	private static void testNaiveUAB() {
 		 for (int linenr = 1; file.hasNextLine(); ++linenr){
 			 double spamProb=0;
 			 double nospamProb=0;
@@ -115,7 +121,7 @@ public class spam {
 		 nTest=(int) nMails*test/100;
 	}
 	
-	private static void test2() {
+	private static void testNaiveCorpora() {
 		File directory = new File(datadir+"part10/");
 		FilenameFilter filter = new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
@@ -174,6 +180,11 @@ public class spam {
 		nTraining=nMails;
 		training=(int) (((float)nTraining/(nMails+nTest))*100);
 		test=(int) (((float)nTest/(nMails+nTest))*100);
+	}
+	
+	private static void testKNN() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private static void setMatrix(int row, int col) {
@@ -262,16 +273,18 @@ public class spam {
 		File filename[] = directory.listFiles(filter);
 		for (int i = 0; i < filename.length; i++) {
 			if(filename[i].isFile()){
-				nMails++;
-				readFile2(filename[i]);
+				readFile2(filename[i],nMails);
+				++nMails;
+				if(nMails>=nTrainingCorpora) return;
 			}
 			if(filename[i].isDirectory()) readDir(filename[i].getPath());
 			
 		}
 	}
 
-	private static void readFile2(File name) {
+	private static void readFile2(File name, int n) {
 		boolean isSpam=false;
+    	treemap treeMessage=new treemap();
 		try {
 			file = new Scanner (name);
 		} catch (FileNotFoundException e) {
@@ -281,32 +294,41 @@ public class spam {
 		}
 		if(name.getName().contains("spmsg")){
 			nSpam++;
+			labels[n]=-1;
 			isSpam=true;
 		}
-		else nNoSpam++;
+		else{
+			nNoSpam++;
+			labels[n]=1;
+		}
 		while(file.hasNext()) {
         	String line = file.nextLine();
-        	if(line.startsWith("Subject") && line.isEmpty()) continue;
+        	int startIndex=0;
+        	if(line.isEmpty()) continue;
+        	if(line.startsWith("Subject:")) startIndex=1;
         	String[] email = line.split (" ");
         	if (email.length > 0) {	
-        		for(int j=1; j<email.length; j++){
+        		for(int j=startIndex; j<email.length; j++){
         			if(!isSpam){
         				noSpam.totalWords++;
         				noSpam.put(Integer.parseInt(email[j]), 1);
         				general.totalWords++;
         				general.put(Integer.parseInt(email[j]), 1);
+        				treeMessage.put(Integer.parseInt(email[j]), 1);
         			}else{
         				spam.totalWords++;
         				spam.put(Integer.parseInt(email[j]), 1);
         				general.totalWords++;
         				general.put(Integer.parseInt(email[j]), 1);
+        				treeMessage.put(Integer.parseInt(email[j]), 1);
         			}
-        			
+    			    
         		}
         			
         	}
         		
         }
+		messages[n]=treeMessage;
 		
 	}
 }
