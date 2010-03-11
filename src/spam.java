@@ -14,6 +14,8 @@ public class spam {
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
 	public static boolean NAIVE_BAYES=false;		//Naive Bayes Algorithm
 	public static boolean KNN=true;					//K-Nearest Neighbor Algorithm
+	private static boolean RISK=true;				//To consider that it is more costful to predict wrong
+													//a nonspam email as spam
 	/***************************/
 	
 	public static String dataset="correus3.txt";
@@ -24,7 +26,7 @@ public class spam {
 	public static int training=50;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	
-	public static int nNeighbors=2;				//Number of neighbors to predict
+	public static int nNeighbors=2;				//Number of neighbors to predict on
 	
 	public static int nTraining=0;
 	public static int nTest=0;
@@ -66,11 +68,6 @@ public class spam {
 		else if(KNN) testKNN();
 		file.close();
 		printMatrix();
-		out.println(messages[1].getValue(1));
-		//findTopFrequencies();
-		//out.println(spam.findMaxIndex(spam.root));
-		//out.println(noSpam.findMaxIndex(noSpam.root));
-		 
 		 
 	}
 	
@@ -204,6 +201,7 @@ public class spam {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				nTest++;
 				treemap newMessage=new treemap();
 				while(file.hasNext()) {
 		        	String line = file.nextLine();
@@ -222,12 +220,15 @@ public class spam {
 				for(int j=0; j<nMails; j++){
 					distances[j]=newMessage.euclidianDistance(messages[j]);
 				}
-				int finalClass=0;
+				int finalClass;
+				if(RISK) finalClass=1;
+				else finalClass=0;
+
 				for(int j=0; j<nNeighbors;j++){
 					finalClass=finalClass+labels[minValue(distances)];
 				}
 				int clase;
-				if(finalClass>0) clase=1;
+				if(finalClass>=0) clase=1;
 				else clase=-1;
 				
 				int label;
@@ -240,6 +241,9 @@ public class spam {
 				setMatrix(label,clase);
 			}
 		}
+		nTraining=nMails;
+		training=(int) (((float)nTraining/(nMails+nTest))*100);
+		test=(int) (((float)nTest/(nMails+nTest))*100);
 	}
 
 	private static int minValue(double[] distances) {
