@@ -14,19 +14,19 @@ public class spam {
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
 	public static boolean NAIVE_BAYES=false;		//Naive Bayes Algorithm
 	public static boolean KNN=true;					//K-Nearest Neighbor Algorithm
-	private static boolean RISK=true;				//To consider that it is more costful to predict wrong
+	private static boolean RISK=false;				//To consider that it is more costful to predict wrong
 													//a nonspam email as spam
 	/***************************/
 	
 	public static String dataset="correus3.txt";
 	//public static String datadir="pu_corpora_public/pu1/";
 	public static String datadir="pu1_encoded/bare/";
-	public static int nTrainingCorpora=500;		// Number of examples for training in the Corpora Dataset
+	public static int nTrainingCorpora=1000;		// Number of examples for training in the Corpora Dataset
 	
 	public static int training=50;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	
-	public static int nNeighbors=2;				//Number of neighbors to predict on
+	public static int nNeighbors=5;				//Number of neighbors to predict on
 	
 	public static int nTraining=0;
 	public static int nTest=0;
@@ -54,8 +54,8 @@ public class spam {
 			noSpam.setPrior(0.2);
 			spam.setPrior(0.8);
 		}else if(NAIVE_BAYES){
-			noSpam.setPrior((double)nNoSpam/(double)nMails);
-			spam.setPrior((double)nSpam/(double)nMails);
+			noSpam.setPrior((double)nNoSpam/(nNoSpam+nSpam));
+			spam.setPrior((double)nSpam/(nNoSpam+nSpam));
 		}
 		
 		if(NAIVE_BAYES){
@@ -221,7 +221,7 @@ public class spam {
 					distances[j]=newMessage.euclidianDistance(messages[j]);
 				}
 				int finalClass;
-				if(RISK) finalClass=1;
+				if(RISK) finalClass=2;
 				else finalClass=0;
 
 				for(int j=0; j<nNeighbors;j++){
@@ -269,8 +269,8 @@ public class spam {
 	private static void printMatrix() {
 		correctRatio=(((float)confusionMatrix[0][0]+confusionMatrix[1][1])/nTest)*100;
 		wrongRatio=(((float)confusionMatrix[0][1]+confusionMatrix[1][0])/nTest)*100;
-		out.println("Number of examples for training: "+nTraining+" - "+training+"%");
-		out.println("Number of examples for testing: "+nTest+" - "+test+"%");
+		out.println("Number of examples for training: "+nTraining);
+		out.println("Number of examples for testing: "+nTest);
 		out.println();
 		out.println("NonSpam Classified CORRECT: "+confusionMatrix[0][0]);
 		out.println("NonSpam Classified WRONG as Spam: "+confusionMatrix[0][1]);
