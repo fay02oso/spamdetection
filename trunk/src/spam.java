@@ -18,7 +18,7 @@ public class spam {
 	
 	public static String dataset="correus3.txt";
 	//public static String datadir="pu_corpora_public/pu1/";
-	public static String datadir="pu1_encoded/bare/";
+	public static String datadir="pu1_encoded/stop/";
 	public static int nTrainingCorpora=1000;		// Number of examples for training in the Corpora Dataset
 	
 	public static int training=50;				//Just for the UAB dataset
