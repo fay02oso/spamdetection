@@ -26,7 +26,7 @@ public class spam {
 	public static int training=50;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	
-	public static int nNeighbors=5;				//Number of neighbors to predict on
+	public static int nNeighbors=20;				//Number of neighbors to predict on
 	
 	public static int nTraining=0;
 	public static int nTest=0;
@@ -220,12 +220,13 @@ public class spam {
 				for(int j=0; j<nMails; j++){
 					distances[j]=newMessage.euclidianDistance(messages[j]);
 				}
-				int finalClass;
+				double finalClass;
 				if(RISK) finalClass=2;
 				else finalClass=0;
 
 				for(int j=0; j<nNeighbors;j++){
-					finalClass=finalClass+labels[minValue(distances)];
+					int index=minValue(distances);
+					finalClass=finalClass+((labels[index])*(-1)*(1/distances[index]));
 				}
 				int clase;
 				if(finalClass>=0) clase=1;
