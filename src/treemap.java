@@ -99,7 +99,7 @@ public class treemap {
 	   
    }
    
-   public int findMaxFrequency(tree node,int max, int[] top){
+   public int findMaxFrequency(tree node, int max, int[] top){
 	   if(node!=null){
 	   
 	       if(node.value>max && !checkMax(max, top)){

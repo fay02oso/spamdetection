@@ -13,7 +13,9 @@ public class spam {
 	public static boolean CORPORA=true; 			//Change the dataset between the corpora and the UAB
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
 	public static boolean NAIVE_BAYES=false;		//Naive Bayes Algorithm
-	public static boolean KNN=true;					//K-Nearest Neighbor Algorithm
+	public static boolean KNN=false;				//K-Nearest Neighbor Algorithm
+	public static boolean ADABOOST=true;
+		
 	/***************************/
 	
 	public static String dataset="correus3.txt";
@@ -43,7 +45,7 @@ public class spam {
 	public static int nMails=0;
 	private static Scanner file;
 	public static int[][] confusionMatrix = new int [2][2];
-	public static int best=3;
+	public static int best=10;
 	public static treemap[] messages= new treemap[2000];
 	public static short[] labels = new short[2000];
 
@@ -67,11 +69,66 @@ public class spam {
 		if(CORPORA && NAIVE_BAYES) testNaiveCorpora();
 		else if(NAIVE_BAYES) testNaiveUAB();
 		else if(KNN) testKNN();
+		else if(ADABOOST){
+			adaBoost ada=new adaBoost();
+			ada.run(messages, labels,nMails);
+			testAdaBoost(ada);
+		}
 		file.close();
 		printMatrix();
-		 
 	}
 	
+	private static void testAdaBoost(adaBoost ada) {
+		File directory = new File(datadir+"part10/");
+		FilenameFilter filter = new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
+		        return !name.startsWith(".") && !name.contains("unused") && !name.contains("part10");
+		    }
+		};
+		File filename[] = directory.listFiles(filter);
+		for (int i = 0; i < filename.length; i++) {
+			if(filename[i].isFile()){
+				
+				try {
+					file = new Scanner (filename[i]);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				nTest++;
+				treemap newMessage=new treemap();
+				while(file.hasNext()) {
+		        	String line = file.nextLine();
+		        	int startIndex=0;
+		        	if(line.isEmpty()) continue;
+		        	if(line.startsWith("Subject:")) startIndex=1;
+		        	String[] email = line.split (" ");
+		        	if (email.length > 0) {	
+		        		for(int j=startIndex; j<email.length; j++){
+		        			newMessage.put(Integer.parseInt(email[j]), 1);  			    
+		        		}
+		        			
+		        	}
+		        		
+		        }
+				int clase=ada.classify(newMessage);
+				
+				
+				int label;
+				if(filename[i].getName().contains("spmsg")){
+					label=-1;
+				}
+				else{
+					label=1;
+				}
+				setMatrix(label,clase);
+			}
+		}
+		nTraining=nMails;
+		training=(int) (((float)nTraining/(nMails+nTest))*100);
+		test=(int) (((float)nTest/(nMails+nTest))*100);
+	}
+
 	private static void testNaiveUAB() {
 		 for (int linenr = 1; file.hasNextLine(); ++linenr){
 			 double spamProb=0;
@@ -396,5 +453,20 @@ public class spam {
         }
 		messages[n]=treeMessage;
 		
+	}
+	
+	public static int[] getWeekLearners() {
+		return findTopFrequencies();
+	}
+	
+	private static int[] findTopFrequencies() {
+		// TODO Auto-generated method stub
+		int[] top=new int [best];
+
+		for(int i=0;i<best;i++){
+			top[i]=general.findMaxFrequency(general.root, 0, top);
+			//out.printf("Identificador:%5d -> Repeticiones:%5d\n",top[i],spam.getValue(top[i])*-1);
+		}
+		return top;
 	}
 }
