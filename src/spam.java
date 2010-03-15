@@ -14,8 +14,6 @@ public class spam {
 	public static boolean DEFAULT_PRIORS=false; 	//Use the default priors 80% spam
 	public static boolean NAIVE_BAYES=false;		//Naive Bayes Algorithm
 	public static boolean KNN=true;					//K-Nearest Neighbor Algorithm
-	private static boolean RISK=false;				//To consider that it is more costful to predict wrong
-													//a nonspam email as spam
 	/***************************/
 	
 	public static String dataset="correus3.txt";
@@ -26,7 +24,10 @@ public class spam {
 	public static int training=50;				//Just for the UAB dataset
 	public static int test=100-training; 		//Just for the UAB dataset
 	
-	public static int nNeighbors=20;				//Number of neighbors to predict on
+	public static int nNeighbors=2;				//Number of neighbors to predict on
+	private static boolean RISK=false;			//To consider that it is more costful to predict wrong
+												//a nonspam email as spam
+	public static boolean WEIGHTED=true;		//To use the weighted k-nearest neighbor
 	
 	public static int nTraining=0;
 	public static int nTest=0;
@@ -71,16 +72,6 @@ public class spam {
 		 
 	}
 	
-	private static void findTopFrequencies() {
-		// TODO Auto-generated method stub
-		int[] top=new int [best];
-
-		for(int i=0;i<best;i++){
-			top[i]=general.findMaxFrequency(general.root, 0, top);
-			out.printf("Identificador:%5d -> Repeticiones:%5d\n",top[i],general.getValue(top[i])*-1);
-		}
-	}
-
 	private static void testNaiveUAB() {
 		 for (int linenr = 1; file.hasNextLine(); ++linenr){
 			 double spamProb=0;
@@ -221,12 +212,13 @@ public class spam {
 					distances[j]=newMessage.euclidianDistance(messages[j]);
 				}
 				double finalClass;
-				if(RISK) finalClass=2;
+				if(RISK) finalClass=-(int)nNeighbors/4;
 				else finalClass=0;
 
 				for(int j=0; j<nNeighbors;j++){
 					int index=minValue(distances);
-					finalClass=finalClass+((labels[index])*(-1)*(1/distances[index]));
+					if(WEIGHTED) finalClass=finalClass+((labels[index])*(-1)*(1/distances[index]));
+					else  finalClass=finalClass+labels[index];
 				}
 				int clase;
 				if(finalClass>=0) clase=1;
