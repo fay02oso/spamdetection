@@ -19,7 +19,7 @@ public class adaBoost {
 		
 		for(int t=0;t<T;t++){
 			ht[t] = weakLearner(messages,labels,D[t], weakLearners);
-			alphat[t]=(float) Math.log((float)((1-et)/et));
+			alphat[t]=(double)Math.log((double)((1-et)/et));
 			double Zt=0;
 			for(int i=0;i<m;i++){
 				int target;

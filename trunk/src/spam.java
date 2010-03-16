@@ -20,7 +20,7 @@ public class spam {
 	
 	public static String dataset="correus3.txt";
 	//public static String datadir="pu_corpora_public/pu1/";
-	public static String datadir="pu1_encoded/stop/";
+	public static String datadir="pu1_encoded/bare/";
 	public static int nTrainingCorpora=1000;		// Number of examples for training in the Corpora Dataset
 	
 	public static int training=50;				//Just for the UAB dataset
@@ -45,11 +45,12 @@ public class spam {
 	public static int nMails=0;
 	private static Scanner file;
 	public static int[][] confusionMatrix = new int [2][2];
-	public static int best=10;
+	public static int best=25;									//Adaboost #weakLearners
 	public static treemap[] messages= new treemap[2000];
 	public static short[] labels = new short[2000];
 
 	public static void main(String[] args) throws IOException {
+		long start = System.currentTimeMillis();
 		if(CORPORA) readDir(datadir);
 		else readFile(dataset);
 		
@@ -76,6 +77,8 @@ public class spam {
 		}
 		file.close();
 		printMatrix();
+		long end = System.currentTimeMillis();
+		System.out.println("\nExecution time was "+(end-start)+" ms.");
 	}
 	
 	private static void testAdaBoost(adaBoost ada) {
